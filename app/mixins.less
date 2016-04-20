@@ -1,0 +1,29 @@
+.hexagon(@size: 40px, @background-color: #000) {
+  @height: @size / sqrt(3);
+
+  position: relative;
+  width: @size;
+  height: @height;
+  background-color: @background-color;
+  margin: @height / 2 0;
+
+  &:before,
+  &:after {
+    content: "";
+    position: absolute;
+    width: 0;
+    border-left: @size / 2 solid transparent;
+    border-right: @size / 2 solid transparent;
+  }
+
+  &:before {
+    bottom: 100%;
+    border-bottom: @height / 2 solid @background-color;
+  }
+
+  &:after {
+    top: 100%;
+    width: 0;
+    border-top: @height / 2 solid @background-color;
+  }
+}

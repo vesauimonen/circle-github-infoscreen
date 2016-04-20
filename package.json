@@ -1,0 +1,37 @@
+{
+  "name": "react-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server"
+  },
+  "author": "Vesa Uimonen",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.9.1",
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "chart.js": "^1.0.2",
+    "chartjs": "^0.3.7",
+    "css-loader": "^0.23.1",
+    "less": "^2.6.0",
+    "less-loader": "^2.2.2",
+    "normalize.css": "^3.0.3",
+    "react": "^0.14.7",
+    "react-chartjs": "^0.7.3",
+    "react-dom": "^0.14.7",
+    "react-router": "^2.0.0-rc5",
+    "react-timeago": "^2.2.1",
+    "style-loader": "^0.13.0",
+    "underscore": "^1.8.3",
+    "webpack": "^1.12.11"
+  },
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-plugin-react": "^3.16.1",
+    "webpack-dev-server": "^1.14.1"
+  }
+}

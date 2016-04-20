@@ -1,0 +1,39 @@
+.metrics,
+.chart {
+  margin-bottom: 10px;
+  padding: 10px 0;
+  background-color: @gray;
+  box-shadow: 3px 3px lighten(@gray, 3%);
+  box-sizing: padding-box;
+}
+
+.metrics {
+  display: flex;
+  flex-direction: row;
+
+  .metric {
+    @hexagon-size: 180px;
+
+    .hexagon(@hexagon-size, @gray-lighter);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+
+    .success-rate {
+      text-align: center;
+      font-size: 60px;
+    }
+
+    .postfix {
+      text-align: center;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+.chart {
+  min-height: 230px;
+}
