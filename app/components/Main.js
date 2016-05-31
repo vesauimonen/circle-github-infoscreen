@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {CIRCLE_PROJECT_NAME, GITHUB_PROJECT_NAME} from '../constants';
+import {CIRCLE_PROJECT_NAME} from '../constants';
 import {getProjectData} from '../utils/helpers';
 import PullRequests from './pull-requests/PullRequests';
 import BuildSuccessRates from './build-success-rates/BuildSuccessRates';
@@ -34,9 +34,7 @@ class Main extends React.Component {
         <BuildSuccessRates
           repository={CIRCLE_PROJECT_NAME}
           builds={this.state.builds} />
-        <PullRequests
-          repository={GITHUB_PROJECT_NAME}
-          pullRequests={this.state.pullRequests} />
+        <PullRequests pullRequests={this.state.pullRequests} />
       </div>
     );
   }

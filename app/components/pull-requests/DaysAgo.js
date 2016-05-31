@@ -9,9 +9,11 @@ class DaysAgo extends React.Component {
     const diffInDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return (
       <span className="days-ago">
-        <span className="prefix">Open for</span>
         <span className="days">{diffInDays}</span>
-        <span className="postfix">days</span>
+          {diffInDays === 1 ?
+            <span className="postfix">day open</span> :
+            <span className="postfix">days open</span>
+          }
       </span>
     );
   }

@@ -1,16 +1,26 @@
 import axios from 'axios';
 import _ from 'underscore';
 
-import {CIRCLE_BUILD_BRANCH, CIRCLE_PROJECT_NAME, GITHUB_PROJECT_NAME, OWNER} from '../constants';
+import {CIRCLE_BUILD_BRANCH, CIRCLE_PROJECT_NAME, GITHUB_PROJECT_NAMES, OWNER} from '../constants';
 
 
 const GITHUB_AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN;
 const CIRCLECI_AUTH_TOKEN = process.env.CIRCLECI_AUTH_TOKEN;
 
 export function getProjectData() {
-  const pullRequestsPromise = getPullRequests(OWNER, GITHUB_PROJECT_NAME);
+  const pullRequestPromises = GITHUB_PROJECT_NAMES.map(projectName =>
+    getPullRequests(OWNER, projectName)
+  );
+
+  const allPullRequestPromises = axios.all(pullRequestPromises).then(axios.spread((...args) => {
+    const pullRequests = args.reduce((a, b) => a.concat(b));
+    return pullRequests.sort((pr1, pr2) => {
+      return pr2.created_at > pr1.created_at ? 1 : ((pr1.created_at > pr2.created_at) ? -1 : 0);
+    });
+  }));
+
   const buildsPromise = getBuilds(OWNER, CIRCLE_PROJECT_NAME, CIRCLE_BUILD_BRANCH);
-  return axios.all([pullRequestsPromise, buildsPromise])
+  return axios.all([allPullRequestPromises, buildsPromise])
     .then(axios.spread((pullRequests, builds) => {
       return {
         pullRequests: pullRequests.reverse(),
