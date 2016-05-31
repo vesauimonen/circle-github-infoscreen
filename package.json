@@ -23,7 +23,6 @@
     "react": "^0.14.7",
     "react-chartjs": "^0.7.3",
     "react-dom": "^0.14.7",
-    "react-router": "^2.0.0-rc5",
     "react-timeago": "^2.2.1",
     "style-loader": "^0.13.0",
     "underscore": "^1.8.3",

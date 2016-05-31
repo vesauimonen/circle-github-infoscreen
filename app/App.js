@@ -1,13 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {hashHistory, Router} from 'react-router';
 
-import routes from './config/routes';
+import Main from './components/Main';
 
 
 require('./app.less');
 
-ReactDOM.render(
-  <Router history={hashHistory}>{routes}</Router>,
-  document.getElementById('app')
-);
+ReactDOM.render(<Main />, document.getElementById('app'));

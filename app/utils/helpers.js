@@ -1,14 +1,15 @@
 import axios from 'axios';
 import _ from 'underscore';
 
+import {CIRCLE_BUILD_BRANCH, CIRCLE_PROJECT_NAME, GITHUB_PROJECT_NAME, OWNER} from '../constants';
+
 
 const GITHUB_AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN;
 const CIRCLECI_AUTH_TOKEN = process.env.CIRCLECI_AUTH_TOKEN;
 
-
-export function getProjectData(owner, repository, branch) {
-  const pullRequestsPromise = getPullRequests(owner, repository);
-  const buildsPromise = getBuilds(owner, repository, branch);
+export function getProjectData() {
+  const pullRequestsPromise = getPullRequests(OWNER, GITHUB_PROJECT_NAME);
+  const buildsPromise = getBuilds(OWNER, CIRCLE_PROJECT_NAME, CIRCLE_BUILD_BRANCH);
   return axios.all([pullRequestsPromise, buildsPromise])
     .then(axios.spread((pullRequests, builds) => {
       return {
