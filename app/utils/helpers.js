@@ -9,7 +9,7 @@ const CIRCLECI_AUTH_TOKEN = process.env.CIRCLECI_AUTH_TOKEN;
 
 export function getProjectData() {
   const pullRequestPromises = GITHUB_PROJECT_NAMES.map(projectName =>
-    getPullRequests(OWNER, projectName)
+    getOpenPullRequests(projectName)
   );
 
   const allPullRequestPromises = axios.all(pullRequestPromises).then(axios.spread((...args) => {
@@ -20,23 +20,82 @@ export function getProjectData() {
   }));
 
   const buildsPromise = getBuilds(OWNER, CIRCLE_PROJECT_NAME, CIRCLE_BUILD_BRANCH);
-  return axios.all([allPullRequestPromises, buildsPromise])
-    .then(axios.spread((pullRequests, builds) => {
-      return {
-        pullRequests: pullRequests.reverse(),
-        builds: builds
-      };
+
+  const reviewerPromises = GITHUB_PROJECT_NAMES.map(projectName => getReviewers(projectName));
+
+  const allReviewerPromises = axios.all(reviewerPromises).then(axios.spread((...args) => {
+    const reviewers = args.reduce((a, b) => a.concat(b)).reduce((memo, reviewer) => {
+      const existingReviewer = memo.filter(user => user.id === reviewer.id)[0];
+      if (existingReviewer) {
+        existingReviewer.count++;
+      } else {
+        reviewer.count = 1;
+        memo.push(reviewer);
+      }
+      return memo;
+    }, []);
+    return reviewers.sort((user1, user2) => {
+      return user2.count > user1.count ? 1 : ((user1.count > user2.count) ? -1 : 0);
+    });
+  }));
+
+  return axios.all([allPullRequestPromises, buildsPromise, allReviewerPromises])
+    .then(axios.spread((pullRequests, builds, reviewers) => {
+      return {pullRequests: pullRequests.reverse(), builds, reviewers};
     })
   );
 }
 
-export function getPullRequests(owner, repository) {
-  const url = (
-    `https://api.github.com/repos/${owner}/${repository}/pulls?access_token=${GITHUB_AUTH_TOKEN}`
-  );
-  return axios.get(url).then((response) => (response.data));
+export function getOpenPullRequests(repository) {
+  const baseURL = getPullsBaseURL(repository);
+  const url = `${baseURL}?access_token=${GITHUB_AUTH_TOKEN}&state=open`;
+  return axios.get(url).then(response => response.data);
 }
 
+export function getReviewers(repository) {
+  const baseURL = getPullsBaseURL(repository);
+  const startingFrom = new Date();
+  startingFrom.setMonth(startingFrom.getMonth() - 3);
+
+  function getPullRequests(perPage, page) {
+    const url = (
+      `${baseURL}?access_token=${GITHUB_AUTH_TOKEN}&state=closed&per_page=${perPage}&page=${page}`
+    );
+    return axios.get(url).then(response => response.data);
+  }
+
+  function mergedAfterStartingFrom(pullRequest) {
+    return new Date(pullRequest.merged_at) >= startingFrom;
+  }
+
+  function getPullRequestsRecursively(pullRequests, perPage, page) {
+    return getPullRequests(perPage, page).then((newPullRequests) => {
+      const pullRequestsAfterStartingFrom = newPullRequests.filter(mergedAfterStartingFrom);
+      pullRequests = pullRequests.concat(pullRequestsAfterStartingFrom);
+      if (
+        pullRequestsAfterStartingFrom.length === newPullRequests.length &&
+        newPullRequests.length === perPage
+      ) {
+        return getPullRequestsRecursively(pullRequests, perPage, page + 1);
+      }
+      return pullRequests;
+    });
+  }
+
+  function getPullRequestReviewer(pullRequest) {
+    const url = `${baseURL}/${pullRequest.number}?access_token=${GITHUB_AUTH_TOKEN}`;
+    return axios.get(url).then(response => response.data.merged_by);
+  }
+
+  return getPullRequestsRecursively([], 100, 1).then(pullRequests => {
+    const promises = pullRequests.filter(pr => pr.merged_at).map(getPullRequestReviewer);
+    return axios.all(promises).then(axios.spread((...args) => args));
+  });
+}
+
+function getPullsBaseURL(repository) {
+  return `https://api.github.com/repos/${OWNER}/${repository}/pulls`;
+}
 
 export function getBuilds(owner, repository, branch) {
   const startingFrom = new Date('2015-04-01');
@@ -60,7 +119,7 @@ export function getBuilds(owner, repository, branch) {
 
   function oldestBuildReached(builds) {
     if (builds.length === 0) {
-      return false;
+      return true;
     }
     const oldestBuildStartTime = new Date(builds[builds.length - 1].start_time);
     return oldestBuildStartTime < startingFrom;

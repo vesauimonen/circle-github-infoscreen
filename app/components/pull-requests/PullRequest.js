@@ -7,9 +7,9 @@ class PullRequest extends React.Component {
     return (
       <li>
         <DaysAgo date={this.props.pullRequest.created_at} />
-        <div className="pr-details">
+        <div className="metric-details">
           <h3>{this.props.pullRequest.title}</h3>
-          <span className="repository">{this.props.pullRequest.head.repo.name}</span>
+          <p>{this.props.pullRequest.head.repo.name}</p>
         </div>
         {this.props.pullRequest.assignee &&
           <img className="assignee-avatar" src={this.props.pullRequest.assignee.avatar_url} />}

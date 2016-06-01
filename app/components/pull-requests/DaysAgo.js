@@ -8,11 +8,11 @@ class DaysAgo extends React.Component {
     const timeDiff = Math.abs(dateObj.getTime() - now.getTime());
     const diffInDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return (
-      <span className="days-ago">
-        <span className="days">{diffInDays}</span>
+      <span className="metric-stamp">
+        <span className="value">{diffInDays}</span>
           {diffInDays === 1 ?
-            <span className="postfix">day open</span> :
-            <span className="postfix">days open</span>
+            <span className="label">day open</span> :
+            <span className="label">days open</span>
           }
       </span>
     );

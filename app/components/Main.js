@@ -4,13 +4,14 @@ import {CIRCLE_PROJECT_NAME} from '../constants';
 import {getProjectData} from '../utils/helpers';
 import PullRequests from './pull-requests/PullRequests';
 import BuildSuccessRates from './build-success-rates/BuildSuccessRates';
+import Reviewers from './reviewers/Reviewers';
 
 
 class Main extends React.Component {
   constructor() {
     super();
     const RELOAD_INTERVAL = 60 * 1000;
-    this.state = {builds: [], pullRequests: []};
+    this.state = {builds: [], pullRequests: [], reviewers: []};
     this.interval = setInterval(() => {
       this.loadStateData();
     }, RELOAD_INTERVAL);
@@ -31,10 +32,11 @@ class Main extends React.Component {
   render() {
     return (
       <div className="content">
+        <PullRequests pullRequests={this.state.pullRequests} />
         <BuildSuccessRates
           repository={CIRCLE_PROJECT_NAME}
           builds={this.state.builds} />
-        <PullRequests pullRequests={this.state.pullRequests} />
+        <Reviewers reviewers={this.state.reviewers} />
       </div>
     );
   }
