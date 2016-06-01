@@ -10,7 +10,7 @@ import Reviewers from './reviewers/Reviewers';
 class Main extends React.Component {
   constructor() {
     super();
-    const RELOAD_INTERVAL = 60 * 1000;
+    const RELOAD_INTERVAL = 10 * 60 * 1000;
     this.state = {builds: [], pullRequests: [], reviewers: []};
     this.interval = setInterval(() => {
       this.loadStateData();
