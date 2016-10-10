@@ -134,23 +134,34 @@ export function getSuccessRate(builds) {
 
 export function getSuccessRatesByMonth(builds) {
   const buildsByMonth = builds.reduce((memo, build) => {
-    const startMonth = getBuildStartMonth(build);
-    if (_.last(memo) && _.last(memo).month === startMonth) {
+    const buildMonth = getBuildMonth(build);
+    if (_.last(memo) && _.last(memo).month === buildMonth) {
       _.last(memo).builds.push(build);
     } else {
-      memo.push({month: startMonth, builds: [build]});
+      memo.push({month: buildMonth, builds: [build]});
     }
     return memo;
   }, []);
 
-  return buildsByMonth.map((buildGroup) => {
-    return {month: buildGroup.month, value: getSuccessRate(buildGroup.builds)};
+  const successRatesByMonth = [];
+
+  buildsByMonth.forEach((buildGroup, i) => {
+    const successRate = {month: buildGroup.month, value: getSuccessRate(buildGroup.builds)};
+    if (isNaN(successRate.value) && i > 0) {
+      successRate.value = successRatesByMonth[i - 1].value;
+    } else if (isNaN(successRate.value)) {
+      successRate.value = 0;
+    }
+    successRatesByMonth.push(successRate);
   });
 
-  function getBuildStartMonth(build) {
-    const startDate = new Date(build.start_time);
-    const year = startDate.getFullYear();
-    const month = startDate.getMonth() + 1;
+  return successRatesByMonth;
+
+  function getBuildMonth(build) {
+    // Sometimes build.start_time is null
+    const buildDate = new Date(build.start_time || build.stop_time);
+    const year = buildDate.getFullYear();
+    const month = buildDate.getMonth() + 1;
     return `${year}-${month}`;
   }
 }
