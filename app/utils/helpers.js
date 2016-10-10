@@ -1,11 +1,15 @@
 import axios from 'axios';
 import _ from 'underscore';
 
-import {CIRCLE_BUILD_BRANCH, CIRCLE_PROJECT_NAME, GITHUB_PROJECT_NAMES, OWNER} from '../constants';
-
-
-const GITHUB_AUTH_TOKEN = process.env.GITHUB_AUTH_TOKEN;
-const CIRCLECI_AUTH_TOKEN = process.env.CIRCLECI_AUTH_TOKEN;
+import {
+  CIRCLE_AUTH_TOKEN,
+  CIRCLE_BUILD_BRANCH,
+  CIRCLE_OWNER,
+  CIRCLE_PROJECT_NAME,
+  GITHUB_AUTH_TOKEN,
+  GITHUB_OWNER,
+  GITHUB_PROJECT_NAMES
+} from '../constants';
 
 export function getProjectData() {
   const pullRequestPromises = GITHUB_PROJECT_NAMES.map(projectName =>
@@ -19,7 +23,7 @@ export function getProjectData() {
     });
   }));
 
-  const buildsPromise = getBuilds(OWNER, CIRCLE_PROJECT_NAME, CIRCLE_BUILD_BRANCH);
+  const buildsPromise = getBuilds(CIRCLE_OWNER, CIRCLE_PROJECT_NAME, CIRCLE_BUILD_BRANCH);
 
   const reviewerPromises = GITHUB_PROJECT_NAMES.map(projectName => getReviewers(projectName));
 
@@ -94,7 +98,7 @@ export function getReviewers(repository) {
 }
 
 function getPullsBaseURL(repository) {
-  return `https://api.github.com/repos/${OWNER}/${repository}/pulls`;
+  return `https://api.github.com/repos/${GITHUB_OWNER}/${repository}/pulls`;
 }
 
 export function getBuilds(owner, repository, branch) {
@@ -113,7 +117,7 @@ export function getBuilds(owner, repository, branch) {
   }
 
   function getBuildsFromCircle(limit, offset) {
-    const url = `https://circleci.com/api/v1/project/${owner}/${repository}/tree/${branch}?circle-token=${CIRCLECI_AUTH_TOKEN}&limit=${limit}&offset=${offset}`;
+    const url = `https://circleci.com/api/v1/project/${owner}/${repository}/tree/${branch}?circle-token=${CIRCLE_AUTH_TOKEN}&limit=${limit}&offset=${offset}`;
     return axios.get(url).then((response) => (response.data));
   }
 

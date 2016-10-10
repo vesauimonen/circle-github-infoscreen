@@ -10,7 +10,9 @@ Infoscreen for CI builds and Github PRs.
 $ npm i
 ```
 
-2. Run the app:
+2. Set up needed environ variables described in `.env.sample`.
+
+3. Run the app:
 
 ```
 $ npm start
