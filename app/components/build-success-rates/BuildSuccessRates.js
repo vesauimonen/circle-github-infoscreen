@@ -1,19 +1,19 @@
 import React from 'react';
-import {Line} from 'react-chartjs';
+import { Line } from 'react-chartjs';
 
-import {getSuccessRate, getSuccessRatesByMonth} from '../../utils/helpers';
+import { getSuccessRate, getSuccessRatesByMonth } from '../../utils/helpers';
 
 
 class BuildSuccessRates extends React.Component {
   render() {
-    const {builds} = this.props;
+    const { builds } = this.props;
     const successRateOfLatest20 = getSuccessRate(builds.slice(0, 20));
     const successRateOfLatest100 = getSuccessRate(builds.slice(0, 100));
     const successRatesByMonth = getSuccessRatesByMonth(builds).reverse();
-    const labels = successRatesByMonth.map((successRate) => (successRate.month));
-    const values = successRatesByMonth.map((successRate) => (successRate.value));
+    const labels = successRatesByMonth.map(successRate => (successRate.month));
+    const values = successRatesByMonth.map(successRate => (successRate.value));
     const chartData = {
-      labels: labels,
+      labels,
       datasets: [
         {
           label: 'Build success rate',
@@ -48,7 +48,7 @@ class BuildSuccessRates extends React.Component {
           <Line data={chartData} options={chartOptions}></Line>
         </div>
       </div>
-      );
+    );
   }
 }
 

@@ -44,7 +44,7 @@ export function getBuilds(owner, repository, branch) {
 
   function getBuildsFromCircle(limit, offset) {
     const url = `https://circleci.com/api/v1/project/${owner}/${repository}/tree/${branch}?circle-token=${CIRCLE_AUTH_TOKEN}&limit=${limit}&offset=${offset}`;
-    return axios.get(url).then((response) => (response.data));
+    return axios.get(url, { headers: { Accept: 'application/json' } }).then(response => (response.data));
   }
 
   function oldestBuildReached(builds) {
@@ -57,8 +57,8 @@ export function getBuilds(owner, repository, branch) {
 }
 
 export function getSuccessRate(builds) {
-  const totalSuccessfulBuilds = builds.filter((b) => b.outcome === 'success').length;
-  const totalFailedBuilds = builds.filter((b) => b.outcome === 'failed').length;
+  const totalSuccessfulBuilds = builds.filter(b => b.outcome === 'success').length;
+  const totalFailedBuilds = builds.filter(b => b.outcome === 'failed').length;
   return Math.floor((totalSuccessfulBuilds / (totalSuccessfulBuilds + totalFailedBuilds)) * 100);
 }
 
@@ -68,7 +68,7 @@ export function getSuccessRatesByMonth(builds) {
     if (_.last(memo) && _.last(memo).month === buildMonth) {
       _.last(memo).builds.push(build);
     } else {
-      memo.push({month: buildMonth, builds: [build]});
+      memo.push({ month: buildMonth, builds: [build] });
     }
     return memo;
   }, []);
@@ -76,7 +76,7 @@ export function getSuccessRatesByMonth(builds) {
   const successRatesByMonth = [];
 
   buildsByMonth.forEach((buildGroup, i) => {
-    const successRate = {month: buildGroup.month, value: getSuccessRate(buildGroup.builds)};
+    const successRate = { month: buildGroup.month, value: getSuccessRate(buildGroup.builds) };
     if (isNaN(successRate.value) && i > 0) {
       successRate.value = successRatesByMonth[i - 1].value;
     } else if (isNaN(successRate.value)) {

@@ -9,11 +9,9 @@ class Reviewers extends React.Component {
       <div className="reviewers">
         <h2>PR reviews in last 3 months</h2>
         <ul className="metric-list">
-          {this.props.reviewers.map((user, index) => {
-            return (
+          {this.props.reviewers.map((user, index) => (
               <Reviewer user={user} key={index} />
-            );
-          })}
+          ))}
         </ul>
       </div>
     );
