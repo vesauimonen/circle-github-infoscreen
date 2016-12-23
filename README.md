@@ -17,3 +17,9 @@ $ npm i
 ```
 $ npm start
 ```
+
+# Building the app
+
+```
+$ npm run build
+```
