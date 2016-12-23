@@ -1,7 +1,7 @@
 import React from 'react';
 import { Line } from 'react-chartjs';
 
-import { getSuccessRate, getSuccessRatesByMonth } from '../../utils/helpers';
+import { getSuccessRate, getSuccessRatesByMonth } from '../../utils/circle';
 
 
 class BuildSuccessRates extends React.Component {
